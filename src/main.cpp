@@ -37,6 +37,7 @@ int main() {
     Mat y_train = dataset.readLabels();    
 
     int steps = X_train.rows / batch_size;
+    double loss = 0;
 
     // Training loop
     cout<<"Start training loop ...\n";
@@ -50,14 +51,12 @@ int main() {
             
             cv::Mat y_pred = maze.forward(X_batch);
             
-            double loss = logLoss.categoricalCrossEntropy(y_batch, y_pred);
-            total_loss += loss;
+            loss = logLoss.categoricalCrossEntropy(y_batch, y_pred);
 
             maze.backward(X_batch, y_batch, y_pred, l_rate);    
             printProgressBar(epoch, i + 1, steps);   
         }
-        double average_loss = total_loss / (steps / batch_size);
-        cout << "\nAverage Loss: " << average_loss << endl;
+        cout << "\nLoss: " << loss << endl;
         cout << "\n\n\n";
     }
     return 0;
