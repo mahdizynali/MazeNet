@@ -8,6 +8,7 @@ class utils{
         cv::Mat softmax (const cv::Mat &);
         cv::Mat relu (const cv::Mat &);
         cv::Mat dot (const cv::Mat &, const cv::Mat &);
+        cv::Mat sum (const cv::Mat &, const cv::Mat &);
 };
 
 cv::Mat utils :: relu (const cv::Mat & X) {
@@ -26,6 +27,13 @@ cv::Mat utils :: relu (const cv::Mat & X) {
     cv::Mat tmp;
     cv::max(X, cv::Scalar(0), tmp);
     return tmp;
+}
+
+cv::Mat utils :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
+    //simplified
+    // cv::Mat tmp(mat1.rows, mat1.cols, mat1.type());
+    // cv::add(mat1, mat2, tmp); 
+    // return tmp;
 }
 
 cv::Mat utils :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
@@ -77,8 +85,12 @@ mazeNet :: mazeNet (int in, int hide, int out) {
 }
 
 cv::Mat mazeNet :: forward (const cv::Mat & X){
-    z1 = utils().dot(w1, w1) + b1;
+    z1 = utils().dot(X, w1);
+    z1 = utils().sum(z1, b1);
+
     a1 = utils().relu(z1);
+
+    z2 = utils().dot(a1, w2) + b2;
     return result;
 }
 
