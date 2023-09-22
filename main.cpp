@@ -25,15 +25,26 @@ cv::Mat utils :: relu (const cv::Mat & X) {
 
     // simplified
     cv::Mat tmp;
-    cv::max(X, cv::Scalar(0), tmp);
+    cv::max(X, cv::Scalar(0.0f), tmp);
     return tmp;
 }
 
-cv::Mat utils :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
-    //simplified
-    // cv::Mat tmp(mat1.rows, mat1.cols, mat1.type());
-    // cv::add(mat1, mat2, tmp); 
+cv::Mat utils :: sum (const cv::Mat & mat1, const cv::Mat & mat2) {
+    // assert(mat1.rows == mat2.rows && mat1.cols == mat2.cols);
+
+    // cv::Mat tmp(mat1.rows, mat1.cols, CV_32FC1);
+
+    // for (int i = 0; i < mat1.rows; i++) {
+    //     for (int j = 0; j < mat1.cols; j++) {
+    //         tmp.at<float>(i, j) = mat1.at<float>(i, j) + mat2.at<float>(i, j);
+    //     }
+    // }
     // return tmp;
+
+    //simplified
+    cv::Mat tmp;
+    cv::add(mat1, mat2, tmp); 
+    return tmp;
 }
 
 cv::Mat utils :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
@@ -43,10 +54,10 @@ cv::Mat utils :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
 
     for (int i = 0; i < mat1.rows; i++) {
         for (int j = 0; j < mat2.cols; j++) {
-            tmp.at<uchar>(i, j) = 0;
+            tmp.at<float>(i, j) = 0;
 
             for (int z = 0; z < mat1.cols; z++) {
-                tmp.at<uchar>(i, j) += mat1.at<uchar>(i, z) * mat2.at<uchar>(z, j);
+                tmp.at<float>(i, j) += mat1.at<float>(i, z) * mat2.at<float>(z, j);
             }
         }
     }
