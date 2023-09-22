@@ -8,12 +8,14 @@ set( NAME_SRC
     src/main.cpp  
     src/utils.cpp
     src/model.cpp
+    src/mnist.cpp
 )
 
 set( NAME_HEADERS        
     include/utils.hpp 
     include/model.hpp 
 	include/config.hpp
+    include/mnist.hpp
 )
 
 find_package(OpenCV REQUIRED)
