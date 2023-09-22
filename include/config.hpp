@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <fstream>
 #include <vector>
+#include <cmath>
 
 # define in_size 784
 # define hide_size 128

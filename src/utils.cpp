@@ -76,5 +76,19 @@ cv::Mat helper :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
 }
 
 double helper :: categoricalCrossEntropy (const cv::Mat & y_train, const cv::Mat & y_pred) {
+    int num_samples = y_train.rows;
+    int num_classes = y_train.cols;
 
+    double loss = 0.0;
+    double epsilon = 1e-15;
+
+    for (int i = 0; i < num_samples; ++i) {
+        for (int j = 0; j < num_classes; ++j) {
+            double y_true = y_train.at<float>(i, j);
+            double y_predicted = y_pred.at<float>(i, j);
+            loss += -y_true * log(y_predicted + epsilon);
+        }
+    }
+
+    return -loss / batch_size;
 }
