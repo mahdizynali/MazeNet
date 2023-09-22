@@ -3,6 +3,26 @@
 #include "include/model.hpp"
 #include "include/mnist.hpp"
 
+void printProgressBar(int epoch, int current, int total, int width = 50) {
+    float progress = static_cast<float>(current) / total;
+    int barWidth = static_cast<int>(progress * width);
+
+    std::cout << "Epoch " << epoch <<" [";
+    for (int i = 0; i < width; ++i) {
+        if (i < barWidth) {
+            std::cout << "=";
+        } else {
+            std::cout << " ";
+        }
+    }
+    std::cout << "] " << int(progress * 100.0) << "%\r";
+    std::cout.flush();
+
+    if (current == total) {
+        std::cout << std::endl;
+    }
+}
+
 int main() {
 
     helper logLoss;
@@ -16,13 +36,12 @@ int main() {
     Mat X_train = dataset.readImages();
     Mat y_train = dataset.readLabels();    
 
-    int steps = X_train.rows;
+    int steps = X_train.rows / batch_size;
 
     // Training loop
     cout<<"Start training loop ...\n";
     for (int epoch = 0; epoch < total_epochs; epoch++) {
         double total_loss = 0.0;
-        cout << "Epoch " << epoch + 1<<endl;
         for (int i = 0; i < steps; i += batch_size) {
             int batch_start = i;
             int batch_end = std::min(i + batch_size, steps);  // Ensure not to go beyond the array size
@@ -34,14 +53,12 @@ int main() {
             double loss = logLoss.categoricalCrossEntropy(y_batch, y_pred);
             total_loss += loss;
 
-            maze.backward(X_batch, y_batch, y_pred, l_rate);       
-
-            // if (i % 100 == 0)
-            //     cout<<"Epoch : "<<epoch<<" "<<i<<" / Loss : "<<loss<<endl;
+            maze.backward(X_batch, y_batch, y_pred, l_rate);    
+            printProgressBar(epoch, i + 1, steps);   
         }
         double average_loss = total_loss / (steps / batch_size);
-        cout << "Average Loss: " << average_loss << endl;
-        cout << "==================\n";
+        cout << "\nAverage Loss: " << average_loss << endl;
+        cout << "\n\n\n";
     }
     return 0;
 }
