@@ -2,6 +2,13 @@
 #include <opencv2/opencv.hpp>
 using namespace std;
 
+class utils{
+    public:
+        cv::Mat sigmoid (const cv::Mat &);
+        cv::Mat softmax (const cv::Mat &);
+        cv::Mat relu (const cv::Mat &);
+}
+
 class mazeNet{
 
     private :
@@ -14,6 +21,7 @@ class mazeNet{
         cv::Mat forward(const cv::Mat &);
         void backward();
         void printLayerSize();
+        cv::Mat operator *(const cv::Mat &, const cv::Mat &);
 };
 
 mazeNet :: mazeNet (int in, int hide, int out) {
@@ -48,6 +56,6 @@ int main(){
     mazeNet maze(784, 128, 10);
 
     maze.printLayerSize();
-    
+
     return 0;
 }
