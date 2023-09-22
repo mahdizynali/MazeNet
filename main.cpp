@@ -17,12 +17,10 @@ cv::Mat utils :: dot (const cv::Mat &mat1, const cv::Mat &mat2) {
 
     for (int i = 0; i < mat1.rows; i++) {
         for (int j = 0; j < mat2.cols; j++) {
-            tmp.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
+            tmp.at<uchar>(i, j) = 0; // Initialize to zero
 
             for (int z = 0; z < mat1.cols; z++) {
-                for (int c = 0; c < 3; c++) {
-                    tmp.at<cv::Vec3b>(i, j)[c] += mat1.at<cv::Vec3b>(i, z)[c] * mat2.at<cv::Vec3b>(z, j)[c];
-                }
+                tmp.at<uchar>(i, j) += mat1.at<uchar>(i, z) * mat2.at<uchar>(z, j);
             }
         }
     }
