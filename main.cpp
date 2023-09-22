@@ -11,6 +11,28 @@ class utils{
         cv::Mat sum (const cv::Mat &, const cv::Mat &);
 };
 
+cv::Mat utils :: sigmoid (const cv::Mat & X) {
+    cv::Mat sigmoidResult;
+    cv::exp(-X, sigmoidResult);
+    cv::add(cv::Scalar(1.0), sigmoidResult, sigmoidResult);
+    cv::divide(cv::Scalar(1.0), sigmoidResult, sigmoidResult);
+
+    return sigmoidResult;
+}
+
+cv::Mat utils :: softmax (const cv::Mat & X) {
+    cv::Mat expX;
+    cv::exp(X, expX);
+
+    cv::Mat sumExpX;
+    cv::reduce(expX, sumExpX, 1, cv::REDUCE_SUM, CV_32FC1);
+
+    cv::Mat softmaxResult;
+    cv::divide(expX, repeat(sumExpX, 1, X.cols), softmaxResult);
+
+    return softmaxResult;
+}
+
 cv::Mat utils :: relu (const cv::Mat & X) {
     // cv::Mat tmp = X;
     // for (int i=0; i<tmp.rows; i++){
@@ -102,6 +124,10 @@ cv::Mat mazeNet :: forward (const cv::Mat & X){
     a1 = utils().relu(z1);
 
     z2 = utils().dot(a1, w2) + b2;
+    z2 = utils().sum(z2, b2);
+
+    result = utils().softmax(z2);
+
     return result;
 }
 
