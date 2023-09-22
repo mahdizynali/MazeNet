@@ -96,7 +96,7 @@ class mazeNet{
     public :
         mazeNet(int, int, int);
         cv::Mat forward(const cv::Mat &);
-        void backward();
+        void backward(const cv::Mat &, const cv::Mat &, const cv::Mat &, float);
         void printLayerSize();
 };
 
@@ -118,17 +118,42 @@ mazeNet :: mazeNet (int in, int hide, int out) {
 }
 
 cv::Mat mazeNet :: forward (const cv::Mat & X){
-    z1 = utils().dot(X, w1);
-    z1 = utils().sum(z1, b1);
+    z1 = utils().dot(X, w1) + b1;
+    // z1 = utils().sum(z1, b1);
 
     a1 = utils().relu(z1);
 
     z2 = utils().dot(a1, w2) + b2;
-    z2 = utils().sum(z2, b2);
+    // z2 = utils().sum(z2, b2);
 
     result = utils().softmax(z2);
 
     return result;
+}
+
+void mazeNet :: backward (const cv::Mat & X_train ,const cv::Mat & y_train, const cv::Mat & y_pred, float learning_rate) {
+
+    cv::Mat lossGradient = y_pred - y_train;
+
+    // Calculate gradients for the output layer
+    cv::Mat a1Transpose = a1.t();
+    cv::Mat w2Gradient = a1Transpose * lossGradient;
+    cv::Mat b2Gradient = cv::Mat::ones(1, lossGradient.rows, CV_32FC1) * lossGradient;
+
+    // Calculate gradients for the hidden layer
+    cv::Mat z1Gradient = lossGradient * w2.t();
+    cv::Mat reluGradient = utils().relu(z1); // Gradient of the relu function
+    z1Gradient = z1Gradient.mul(reluGradient);
+
+    cv::Mat XTranspose = X_train.t();
+    cv::Mat w1Gradient = XTranspose * z1Gradient;
+    cv::Mat b1Gradient = cv::Mat::ones(1, z1Gradient.rows, CV_32FC1) * z1Gradient;
+
+    // Update weights and biases using gradients and learning rate
+    w1 -= learning_rate * w1Gradient;
+    b1 -= learning_rate * b1Gradient;
+    w2 -= learning_rate * w2Gradient;
+    b2 -= learning_rate * b2Gradient;
 }
 
 void mazeNet :: printLayerSize () {
