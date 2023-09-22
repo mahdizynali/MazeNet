@@ -1,9 +1,11 @@
 #include "include/model.hpp"
 
 mazeNet :: mazeNet (int in, int hide, int out) {
-    input_size = in;
-    hidden_size = hide;
-    output_size = out;
+    this->input_size = in;
+    this->hidden_size = hide;
+    this->output_size = out;
+
+    // cv::RNG rng(time(0)); // Seed the random number generator
 
     w1 = cv::Mat (input_size, hidden_size, CV_32FC1); // Use CV_32FC1 for floating-point weights
     randu(w1, cv::Scalar(0.0), cv::Scalar(1.0)); // initiate random weigths
@@ -13,18 +15,18 @@ mazeNet :: mazeNet (int in, int hide, int out) {
     w2 = cv::Mat (hidden_size, output_size, CV_32FC1);
     randu(w2, cv::Scalar(0.0), cv::Scalar(1.0));
 
-    b2 = cv::Mat::zeros(2, output_size, CV_32FC1);
+    b2 = cv::Mat::zeros(1, output_size, CV_32FC1);
 
 }
 
 cv::Mat mazeNet :: forward (const cv::Mat & X) {
-    z1 = utils.dot(X, w1) + b1;
-    // z1 = utils.sum(z1, b1);
+    z1 = utils.dot(X, w1);
+    z1 = utils.sum(z1, b1);
 
     a1 = utils.relu(z1);
 
-    z2 = utils.dot(a1, w2) + b2;
-    // z2 = utils.sum(z2, b2);
+    z2 = utils.dot(a1, w2);
+    z2 = utils.sum(z2, b2);
 
     result = utils.softmax(z2);
 

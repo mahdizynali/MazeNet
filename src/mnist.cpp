@@ -32,7 +32,7 @@ cv::Mat readUbyte :: readImages() {
     numRows = reverseInt(numRows);
     numCols = reverseInt(numCols);
 
-    Mat mnistImages(numImages, numRows * numCols, CV_8U);
+    Mat mnistImages(numImages, numRows * numCols, CV_32FC1);
 
     for (int i = 0; i < numImages; ++i) {
         for (int r = 0; r < numRows; ++r) {
@@ -61,7 +61,7 @@ cv::Mat readUbyte :: readLabels() {
     magicNumber = reverseInt(magicNumber);
     numLabels = reverseInt(numLabels);
 
-    Mat mnistLabels(numLabels, 1, CV_8U);
+    cv::Mat mnistLabels(numLabels, 1, CV_32FC1);
 
     for (int i = 0; i < numLabels; ++i) {
         uint8_t label;

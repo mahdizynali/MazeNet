@@ -5,8 +5,10 @@
 
 int main() {
 
+    helper logLoss;
+
     mazeNet maze(in_size, hide_size, out_size);
-    maze.printLayerSize();
+    // maze.printLayerSize();
 
     //mnist dataset address
     readUbyte dataset("/home/mahdi/Desktop/MazeNet/dataset/train-images.idx3-ubyte",
@@ -15,30 +17,25 @@ int main() {
     Mat y_train = dataset.readLabels();    
 
     int steps = X_train.rows;
-    double loss;
-
-    cout << "X_train dimensions: " << X_train.rows << "x" << X_train.cols << endl;
-    cout << "y_train dimensions: " << y_train.rows << "x" << y_train.cols << endl;
-
+    double total_loss = 0.0;
 
     // Training loop
-    // for (int epoch = 0; epoch < total_epochs; epoch++) {
-    //     for (int i = 0; i < steps; i += batch_size) {
-    //         int batch_start = i;
-    //         int batch_end = std::min(i + batch_size, steps);  // Ensure not to go beyond the array size
-
-    //         cv::Mat X_train = X_train.rowRange(batch_start, batch_end);
-    //         cv::Mat y_train = y_train.rowRange(batch_start, batch_end);
-
-    //         cv::Mat y_pred = maze.forward(X_train);
-
-    //         loss = utils().categoricalCrossEntropy(y_train, y_pred);
-
-    //         maze.backward(X_train, y_train, y_pred, l_rate);
-    //     }
-
-    //     cout << "Epoch " << epoch + 1 << " completed." << endl;
-    // }
-
+    
+    for (int epoch = 0; epoch < total_epochs; epoch++) {
+        for (int i = 0; i < steps; i += batch_size) {
+            int batch_start = i;
+            int batch_end = std::min(i + batch_size, steps);  // Ensure not to go beyond the array size
+            cv::Mat X_batch = X_train.rowRange(batch_start, batch_end);
+            cv::Mat y_batch = y_train.rowRange(batch_start, batch_end);
+            
+            cv::Mat y_pred = maze.forward(X_batch);
+            
+            total_loss += logLoss.categoricalCrossEntropy(y_batch, y_pred);
+            
+            maze.backward(X_batch, y_batch, y_pred, l_rate);         
+        }
+        double average_loss = total_loss / (steps / batch_size);
+        cout << "Epoch " << epoch + 1 << " completed. Average Loss: " << average_loss << endl;
+    }
     return 0;
 }
