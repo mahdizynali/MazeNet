@@ -11,6 +11,7 @@ class helper{
         cv::Mat relu (const cv::Mat &);
         cv::Mat dot (const cv::Mat &, const cv::Mat &);
         cv::Mat sum (const cv::Mat &, const cv::Mat &);
+        cv::Mat sub (const cv::Mat &, const cv::Mat &);
         double categoricalCrossEntropy (const cv::Mat &, const cv::Mat &);
 };
 

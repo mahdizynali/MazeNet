@@ -17,11 +17,12 @@ int main() {
     Mat y_train = dataset.readLabels();    
 
     int steps = X_train.rows;
-    double total_loss = 0.0;
 
     // Training loop
-    
+    cout<<"Start training loop ...\n";
     for (int epoch = 0; epoch < total_epochs; epoch++) {
+        double total_loss = 0.0;
+        cout << "Epoch " << epoch + 1<<endl;
         for (int i = 0; i < steps; i += batch_size) {
             int batch_start = i;
             int batch_end = std::min(i + batch_size, steps);  // Ensure not to go beyond the array size
@@ -30,12 +31,17 @@ int main() {
             
             cv::Mat y_pred = maze.forward(X_batch);
             
-            total_loss += logLoss.categoricalCrossEntropy(y_batch, y_pred);
-            
-            maze.backward(X_batch, y_batch, y_pred, l_rate);         
+            double loss = logLoss.categoricalCrossEntropy(y_batch, y_pred);
+            total_loss += loss;
+
+            maze.backward(X_batch, y_batch, y_pred, l_rate);       
+
+            // if (i % 100 == 0)
+            //     cout<<"Epoch : "<<epoch<<" "<<i<<" / Loss : "<<loss<<endl;
         }
         double average_loss = total_loss / (steps / batch_size);
-        cout << "Epoch " << epoch + 1 << " completed. Average Loss: " << average_loss << endl;
+        cout << "Average Loss: " << average_loss << endl;
+        cout << "==================\n";
     }
     return 0;
 }
