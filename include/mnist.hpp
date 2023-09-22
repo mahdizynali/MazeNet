@@ -6,13 +6,14 @@
 class readUbyte{
 
     private:
-        const string & labelPath;
-        const string & imagePath;
+        string labelPath;
+        string imagePath;
 
     public:
         readUbyte(const string &, const string &);
-        cv::Mat readImages(const string &);
-        cv::Mat readLabels(const string &);
+        cv::Mat readImages();
+        cv::Mat readLabels();
+        int reverseInt(int);
 };
 
 #endif // MNIST_HPP
