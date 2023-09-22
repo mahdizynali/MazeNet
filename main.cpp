@@ -136,24 +136,24 @@ void mazeNet :: backward (const cv::Mat & X_train ,const cv::Mat & y_train, cons
     cv::Mat lossGradient = y_pred - y_train;
 
     // Calculate gradients for the output layer
-    cv::Mat a1Transpose = a1.t();
-    cv::Mat w2Gradient = a1Transpose * lossGradient;
-    cv::Mat b2Gradient = cv::Mat::ones(1, lossGradient.rows, CV_32FC1) * lossGradient;
+    cv::Mat a1_Transpose = a1.t();
+    cv::Mat w2_Gradient = a1_Transpose * lossGradient;
+    cv::Mat b2_Gradient = cv::Mat::ones(1, lossGradient.rows, CV_32FC1) * lossGradient;
 
     // Calculate gradients for the hidden layer
-    cv::Mat z1Gradient = lossGradient * w2.t();
+    cv::Mat z1_Gradient = lossGradient * w2.t();
     cv::Mat reluGradient = utils().relu(z1); // Gradient of the relu function
-    z1Gradient = z1Gradient.mul(reluGradient);
+    z1_Gradient = z1_Gradient.mul(reluGradient);
 
-    cv::Mat XTranspose = X_train.t();
-    cv::Mat w1Gradient = XTranspose * z1Gradient;
-    cv::Mat b1Gradient = cv::Mat::ones(1, z1Gradient.rows, CV_32FC1) * z1Gradient;
+    cv::Mat X_Transpose = X_train.t();
+    cv::Mat w1_Gradient = X_Transpose * z1_Gradient;
+    cv::Mat b1_Gradient = cv::Mat::ones(1, z1_Gradient.rows, CV_32FC1) * z1_Gradient;
 
     // Update weights and biases using gradients and learning rate
-    w1 -= learning_rate * w1Gradient;
-    b1 -= learning_rate * b1Gradient;
-    w2 -= learning_rate * w2Gradient;
-    b2 -= learning_rate * b2Gradient;
+    w1 -= learning_rate * w1_Gradient;
+    b1 -= learning_rate * b1_Gradient;
+    w2 -= learning_rate * w2_Gradient;
+    b2 -= learning_rate * b2_Gradient;
 }
 
 void mazeNet :: printLayerSize () {
