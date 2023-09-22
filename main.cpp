@@ -47,5 +47,7 @@ int main(){
 
     mazeNet maze(784, 128, 10);
 
+    maze.printLayerSize();
+    
     return 0;
 }
