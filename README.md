@@ -15,3 +15,19 @@ you would change config.hpp header in order to set your hyperparameter as you ne
 # define total_epochs 10
 # define batch_size 64
 ```
+right now inside MazeNet folder follow these commands to build and run training loop :
+```
+mkdir build && cd build
+```
+```
+make
+```
+Or try this for a bit faster :
+```
+make -j`nproc`
+```
+finally run the program :
+```
+./maze
+```
+after training , neuron weights will recive and save into a yml file besides maze program.
