@@ -32,7 +32,7 @@ cv::Mat readUbyte :: readImages() {
     numRows = reverseInt(numRows);
     numCols = reverseInt(numCols);
 
-    Mat mnistImages(numImages, numRows * numCols, CV_32FC1);
+    Mat mnistImages(numImages, numRows * numCols, CV_8UC1);
 
     for (int i = 0; i < numImages; ++i) {
         for (int r = 0; r < numRows; ++r) {
@@ -44,10 +44,13 @@ cv::Mat readUbyte :: readImages() {
         }
     }
 
+    // Normalize pixel values to the range [0.0, 1.0]
+    mnistImages.convertTo(mnistImages, CV_32FC1, 1.0 / 255.0);
+
     return mnistImages;
 }
 
-cv::Mat readUbyte :: readLabels() {
+cv::Mat readUbyte::readLabels() {
     ifstream file(labelPath, ios::binary);
     if (!file) {
         cerr << "Failed to open MNIST label file: " << labelPath << endl;
@@ -61,7 +64,8 @@ cv::Mat readUbyte :: readLabels() {
     magicNumber = reverseInt(magicNumber);
     numLabels = reverseInt(numLabels);
 
-    cv::Mat mnistLabels(numLabels, 1, CV_32FC1);
+    // Read labels as uint8_t
+    cv::Mat mnistLabels(numLabels, 1, CV_8UC1);
 
     for (int i = 0; i < numLabels; ++i) {
         uint8_t label;
@@ -69,5 +73,9 @@ cv::Mat readUbyte :: readLabels() {
         mnistLabels.at<uint8_t>(i, 0) = label;
     }
 
-    return mnistLabels;
+    // Convert labels to the desired data type (e.g., CV_32FC1)
+    cv::Mat mnistLabelsFloat;
+    mnistLabels.convertTo(mnistLabelsFloat, CV_32FC1);
+
+    return mnistLabelsFloat;
 }

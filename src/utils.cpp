@@ -98,6 +98,8 @@ cv::Mat helper :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
 
 
 double helper::categoricalCrossEntropy(const cv::Mat& y_train, const cv::Mat& y_pred) {
+
+    // cout<<y_train.size()<<"   "<<y_pred.size()<<endl;
     int num_samples = y_train.rows;
     int num_classes = 10;
 

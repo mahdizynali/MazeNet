@@ -11,8 +11,8 @@ cv::Mat y_test;
 void loadDataset () {
 
     //mnist dataset address
-    readUbyte dataset("/home/mahdi/Desktop/MazeNet/dataset/train-images.idx3-ubyte",
-                     "/home/mahdi/Desktop/MazeNet/dataset/train-labels.idx1-ubyte"); 
+    readUbyte dataset("/home/maximum/Desktop/MazeNet/dataset/train-images.idx3-ubyte",
+                    "/home/maximum/Desktop/MazeNet/dataset/train-labels.idx1-ubyte"); 
     cv::Mat X_train_full = dataset.readImages();
     cv::Mat y_train_full = dataset.readLabels();
 
