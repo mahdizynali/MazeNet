@@ -28,6 +28,30 @@ void loadDataset () {
     y_test = y_train_full.rowRange(split_index, num_samples);
 }
 
+void displayRandom() {
+    std::vector<int> sampleIndices;
+        for (int i = 0; i < 5; ++i) {
+            int randomIndex = std::rand() % X_train.rows;
+            sampleIndices.push_back(randomIndex);
+        }
+
+        // Display the selected samples
+        for (int i = 0; i < sampleIndices.size(); ++i) {
+            int index = sampleIndices[i];
+            cv::Mat image = X_train.row(index).reshape(0, 28); // Reshape to 28x28
+            cv::String label = std::to_string(static_cast<int>(y_train.at<float>(index, 0)));
+
+            // Create a window and display the image with its label
+            cv::imshow("MNIST Sample", image);
+            cv::putText(image, label, cv::Point(10, 20), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 1);
+            cv::imshow("MNIST Sample with Label", image);
+
+            // Wait for a key press and close the window when a key is pressed
+            cv::waitKey(0);
+            cv::destroyAllWindows();
+        }
+}
+
 void printProgressBar(int epoch, int current, int total, int width = 50) {
     float progress = static_cast<float>(current) / total;
     int barWidth = static_cast<int>(progress * width);
@@ -55,6 +79,7 @@ int main() {
     mazeNet maze(in_size, hide_size, out_size);
     // maze.printLayerSize();
     loadDataset();
+    // displayRandom();
 
     int steps = X_train.rows / batch_size;
     double loss = 0;
