@@ -23,21 +23,21 @@ cv::Mat helper :: softmax (const cv::Mat & X) {
 }
 
 cv::Mat helper :: relu (const cv::Mat & X) {
-    // cv::Mat tmp = X;
-    // for (int i=0; i<tmp.rows; i++){
-    //     for(int j=0; j<tmp.cols; j++){
-    //         if(tmp.at<uchar>(i, j) > 0)
-    //             continue;
-    //         else
-    //             tmp.at<uchar>(i, j) = 0;
-    //     }
-    // }
-    // return tmp;
+    cv::Mat tmp(X.rows, X.cols, CV_32FC1);
+    for (int i=0; i<tmp.rows; i++){
+        for(int j=0; j<tmp.cols; j++){
+            if(tmp.at<float>(i, j) > 0.0)
+                continue;
+            else
+                tmp.at<float>(i, j) = 0.0;
+        }
+    }
+    return tmp;
 
     // simplified
-    cv::Mat tmp;
-    cv::max(X, cv::Scalar(0.0f), tmp);
-    return tmp;
+    // cv::Mat tmp;
+    // cv::max(X, cv::Scalar(0.0f), tmp);
+    // return tmp;
 }
 
 cv::Mat helper :: sum (const cv::Mat & mat1, const cv::Mat & mat2) {
@@ -94,7 +94,6 @@ cv::Mat helper :: dot (const cv::Mat & mat1, const cv::Mat & mat2) {
     }
     return tmp;
 }
-
 
 
 double helper::categoricalCrossEntropy(const cv::Mat& y_train, const cv::Mat& y_pred) {
