@@ -9,18 +9,35 @@ cv::Mat helper :: sigmoid (const cv::Mat & X) {
     return sigmoidResult;
 }
 
-cv::Mat helper :: softmax (const cv::Mat & X) {
+// cv::Mat helper :: softmax (const cv::Mat & X) {
+//     cv::Mat expX;
+//     cv::exp(X, expX);
+
+//     cv::Mat sumExpX;
+//     cv::reduce(expX, sumExpX, 1, cv::REDUCE_SUM, CV_32FC1);
+
+//     cv::Mat softmaxResult;
+//     cv::divide(expX, repeat(sumExpX, 1, X.cols), softmaxResult);
+
+//     return softmaxResult;
+// }
+
+cv::Mat helper :: softmax(const cv::Mat &X) {
+
+    cv::Mat maxVal;
+    cv::reduce(X, maxVal, 1, cv::REDUCE_MAX, CV_32FC1);
+
     cv::Mat expX;
-    cv::exp(X, expX);
+    cv::exp(X - repeat(maxVal, 1, X.cols), expX);
 
     cv::Mat sumExpX;
     cv::reduce(expX, sumExpX, 1, cv::REDUCE_SUM, CV_32FC1);
 
-    cv::Mat softmaxResult;
-    cv::divide(expX, repeat(sumExpX, 1, X.cols), softmaxResult);
+    cv::Mat softmaxResult = expX / repeat(sumExpX, 1, X.cols);
 
     return softmaxResult;
 }
+
 
 cv::Mat helper :: relu (const cv::Mat & X) {
     cv::Mat tmp(X.rows, X.cols, CV_32FC1);
