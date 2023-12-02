@@ -29,17 +29,17 @@ mazeNet::mazeNet(int in, int hide, int out) {
 
 cv::Mat mazeNet :: forward (const cv::Mat & X) {
     z1 = utils.dot(X, w1);
-    // z1 = X * w1;
     z1 = utils.sum(z1, b1);
 
     a1 = utils.relu(z1);
-    // cout<<"before :: "<<a1<<endl;
 
     z2 = utils.dot(a1, w2);
     z2 = utils.sum(z2, b2);
     result = utils.softmax(z2);
+
     return result;
 }
+
 
 void mazeNet :: backward (const cv::Mat & X_train ,const cv::Mat & y_train, const cv::Mat & y_pred, float learning_rate) {
 
