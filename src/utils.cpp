@@ -58,13 +58,12 @@ cv::Mat helper :: relu (const cv::Mat & X) {
 }
 
 cv::Mat helper :: sum (const cv::Mat & mat1, const cv::Mat & mat2) {
-    assert(mat1.cols == mat2.cols);
 
     cv::Mat tmp(mat1.rows, mat1.cols, CV_32FC1);
 
     for (int i = 0; i < mat1.rows; i++) {
         for (int j = 0; j < mat1.cols; j++) {
-            tmp.at<float>(i, j) = mat1.at<float>(i, j) + mat2.at<float>(i, j);
+            tmp.at<float>(i, j) = mat1.at<float>(i, j) + mat2.at<float>(0, j);
         }
     }
 
