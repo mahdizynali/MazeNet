@@ -6,8 +6,16 @@ First clone repository via this command :
 ```
 git clone https://github.com/mahdizynali/MazeNet.git
 ```
+Now try to run shell script easy to use :
+```
+chmod a+x run.sh
+```
+```
+./run.sh
+```
+### Run as developer
 after that you have to extract dataset from compress file (dataset.tar.xz).
-tar.gz is being support by linux & mac systems. \
+tar.xz is being support by linux & mac systems. \
 you would change config.hpp header in order to set your hyperparameter as you need.
 
 ```
