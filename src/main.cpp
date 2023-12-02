@@ -87,12 +87,9 @@ int main() {
     // Training loop
     cout<<"\nStart training loop ...\n";
     for (int epoch = 0; epoch < total_epochs; epoch++) {
-        double total_loss = 0.0;
         for (int i = 0; i < steps; i += batch_size) {
-            int batch_start = i;
-            int batch_end = std::min(i + batch_size, steps);  // Ensure not to go beyond the array size
-            cv::Mat X_batch = X_train.rowRange(batch_start, batch_end);
-            cv::Mat y_batch = y_train.rowRange(batch_start, batch_end);
+            cv::Mat X_batch = X_train.rowRange(i, std::min(i + batch_size, steps));
+            cv::Mat y_batch = y_train.rowRange(i, std::min(i + batch_size, steps));
             
             cv::Mat y_pred = maze.forward(X_batch);
             
