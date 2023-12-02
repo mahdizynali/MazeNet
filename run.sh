@@ -1,5 +1,5 @@
 clear
-sudo apt install libopencv-dev -y
+sudo apt install libopencv-dev libarmadillo-dev -y
 
 if [ -d "dataset" ]; then
     echo "Datasets successfully find."

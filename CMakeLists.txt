@@ -19,6 +19,7 @@ set( NAME_HEADERS
 )
 
 find_package(OpenCV REQUIRED)
+find_package(Armadillo REQUIRED)
 
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
@@ -28,4 +29,7 @@ include_directories(
 
 add_executable(maze ${NAME_SRC} ${NAME_HEADERS})
 
-target_link_libraries(maze PRIVATE ${OpenCV_LIBS})
+target_link_libraries(maze PRIVATE 
+    ${OpenCV_LIBS}
+    ${Armadillo_LIBRARIES}
+)
