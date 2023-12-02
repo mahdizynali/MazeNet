@@ -81,7 +81,7 @@ int main() {
     loadDataset();
     // displayRandom();
 
-    int steps = X_train.rows / batch_size;
+    int steps = X_train.rows;
     double loss = 0;
 
     // Training loop
