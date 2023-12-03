@@ -45,7 +45,7 @@ cv::Mat readUbyte :: readImages() {
     }
 
     // Normalize pixel values to the range [0.0, 1.0]
-    mnistImages.convertTo(mnistImages, CV_32FC1, 1.0 / 255.0);
+    mnistImages.convertTo(mnistImages, CV_64FC1, 1.0 / 255.0);
 
     return mnistImages;
 }
@@ -73,9 +73,9 @@ cv::Mat readUbyte::readLabels() {
         mnistLabels.at<uint8_t>(i, 0) = label;
     }
 
-    // Convert labels to the desired data type (e.g., CV_32FC1)
+    // Convert labels to the desired data type (e.g., CV_64FC1)
     cv::Mat mnistLabelsFloat;
-    mnistLabels.convertTo(mnistLabelsFloat, CV_32FC1);
+    mnistLabels.convertTo(mnistLabelsFloat, CV_64FC1);
 
     return mnistLabelsFloat;
 }
