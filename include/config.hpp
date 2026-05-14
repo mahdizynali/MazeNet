@@ -8,12 +8,12 @@
 #include <cmath>
 #include <iomanip>
 
-# define in_size 784
-# define hide_size 128
-# define out_size 10
-# define l_rate 0.005
-# define total_epochs 10
-# define batch_size 64
+constexpr int in_size = 784;
+constexpr int hide_size = 128;
+constexpr int out_size = 10;
+constexpr double l_rate = 0.005;
+constexpr int total_epochs = 10;
+constexpr int batch_size = 64;
 
 using namespace std;
 using namespace cv;
