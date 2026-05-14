@@ -50,17 +50,17 @@ cv::Mat helper :: softmax(const cv::Mat &X) {
 // }
 
 
-cv::Mat helper::relu (const cv::Mat & X) {
-    cv::Mat tmp(X.rows, X.cols, CV_64FC1);
-    for (int i=0; i<tmp.rows; i++){
-        for(int j=0; j<tmp.cols; j++){
-            if(tmp.at<float>(i, j) > 0.0)
-                continue;
-            else
-                tmp.at<float>(i, j) = 0.0;
+cv::Mat helper::relu(const cv::Mat& X) {
+    cv::Mat out(X.rows, X.cols, X.type());
+
+    for (int i = 0; i < X.rows; i++) {
+        for (int j = 0; j < X.cols; j++) {
+            double v = X.at<double>(i, j);
+            out.at<double>(i, j) = std::max(0.0, v);
         }
     }
-    return tmp;
+
+    return out;
 
     // simplified
     // cv::Mat tmp;
