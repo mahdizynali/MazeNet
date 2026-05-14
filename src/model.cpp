@@ -1,13 +1,25 @@
 #include "include/model.hpp"
 
+#include <cmath>
+#include <ctime>
+
 cv::Mat randomNormal(int rows, int cols) {
+    /*
+        He initialization for ReLU networks.
+
+        rows = fan_in
+        cols = fan_out
+    */
+
     cv::Mat result(rows, cols, CV_64FC1);
-    cv::RNG rng(static_cast<unsigned int>(std::time(0)));
+
+    static cv::RNG rng(static_cast<uint64>(cv::getTickCount()));
+
+    double scale = std::sqrt(2.0 / static_cast<double>(rows));
 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            float value = static_cast<float>(rng.gaussian(1.0));
-            result.at<float>(i, j) = value;
+            result.at<double>(i, j) = rng.gaussian(scale);
         }
     }
 
@@ -26,58 +38,118 @@ mazeNet::mazeNet(int in, int hide, int out) {
     b2 = cv::Mat::zeros(1, output_size, CV_64FC1);
 }
 
+cv::Mat mazeNet::forward(const cv::Mat& X) {
+    CV_Assert(X.type() == CV_64FC1);
+    CV_Assert(X.cols == input_size);
 
-cv::Mat mazeNet :: forward (const cv::Mat & X) {
+    /*
+        Layer 1:
+            z1 = X . w1 + b1
+            a1 = ReLU(z1)
+
+        Layer 2:
+            z2 = a1 . w2 + b2
+            result = Softmax(z2)
+    */
+
     z1 = utils.dot(X, w1);
     z1 = utils.sum(z1, b1);
 
     a1 = utils.relu(z1);
-    
+
     z2 = utils.dot(a1, w2);
     z2 = utils.sum(z2, b2);
-    // cout<<result<<endl;
+
     result = utils.softmax(z2);
 
     return result;
 }
 
+void mazeNet::backward(
+    const cv::Mat& X_train,
+    const cv::Mat& y_train,
+    const cv::Mat& y_pred,
+    float learning_rate
+) {
+    CV_Assert(X_train.type() == CV_64FC1);
+    CV_Assert(y_train.type() == CV_64FC1);
+    CV_Assert(y_pred.type() == CV_64FC1);
 
-void mazeNet :: backward (const cv::Mat & X_train ,const cv::Mat & y_train, const cv::Mat & y_pred, float learning_rate) {
+    CV_Assert(X_train.rows == y_train.rows);
+    CV_Assert(X_train.rows == y_pred.rows);
+    CV_Assert(X_train.cols == input_size);
+    CV_Assert(y_train.cols == 1);
+    CV_Assert(y_pred.cols == output_size);
 
-    cv::Mat y_pred_one_hot(y_pred.rows, y_pred.cols, CV_64FC1, cv::Scalar(0.0));  // Initialize with zeros
+    const double m = static_cast<double>(X_train.rows);
+    const double lr = static_cast<double>(learning_rate);
 
-    for (int i = 0; i < y_pred.rows; i++) {
-        // Find the index of the maximum value in the current row (argmax)
-        cv::Point max_index;
-        cv::minMaxLoc(y_pred.row(i), nullptr, nullptr, nullptr, &max_index);
-        // Set the corresponding class to 1
-        y_pred_one_hot.at<float>(i, max_index.x) = 1.0;
-    }
+    /*
+        Convert labels:
 
-    cv::Mat lossGradient = utils.sub(y_pred, y_train);
+        y_train:
+            batch_size x 1
 
-    // Calculate gradients for the output layer
-    cv::Mat a1_Transpose = a1.t();
-    cv::Mat w2_Gradient = utils.dot(a1_Transpose ,lossGradient);
-    cv::Mat b2_Gradient = utils.dot(cv::Mat::ones(1, lossGradient.rows, CV_64FC1) ,lossGradient);
+        y_true:
+            batch_size x output_size
+    */
 
-    // Calculate gradients for the hidden layer
-    cv::Mat z1_Gradient = utils.dot(lossGradient ,w2.t());
-    cv::Mat reluGradient = utils.relu(z1); // Gradient of the relu function
-    z1_Gradient = z1_Gradient.mul(reluGradient);
+    cv::Mat y_true = utils.oneHot(y_train, output_size);
 
-    cv::Mat X_Transpose = X_train.t();
-    cv::Mat w1_Gradient = utils.dot(X_Transpose ,z1_Gradient);
-    cv::Mat b1_Gradient = utils.dot(cv::Mat::ones(1, z1_Gradient.rows, CV_64FC1) ,z1_Gradient);
-    // Update weights and biases using gradients and learning rate
-    w1 -= learning_rate * w1_Gradient;
-    b1 -= learning_rate * b1_Gradient;
-    w2 -= learning_rate * w2_Gradient;
-    b2 -= learning_rate * b2_Gradient;
+    /*
+        Softmax + categorical cross entropy gradient:
+
+        dZ2 = y_pred - y_true
+    */
+
+    cv::Mat lossGradient = utils.sub(y_pred, y_true);
+
+    /*
+        Output layer gradients:
+
+        dW2 = a1.T . dZ2 / m
+        db2 = mean(dZ2)
+    */
+
+    cv::Mat a1Transpose = a1.t();
+    cv::Mat w2Gradient = utils.dot(a1Transpose, lossGradient) / m;
+
+    cv::Mat b2Gradient;
+    cv::reduce(lossGradient, b2Gradient, 0, cv::REDUCE_AVG, CV_64FC1);
+
+    /*
+        Hidden layer gradients:
+
+        dA1 = dZ2 . w2.T
+        dZ1 = dA1 * ReLU'(z1)
+        dW1 = X.T . dZ1 / m
+        db1 = mean(dZ1)
+    */
+
+    cv::Mat z1Gradient = utils.dot(lossGradient, w2.t());
+
+    cv::Mat reluGradient = utils.reluDerivative(z1);
+    z1Gradient = z1Gradient.mul(reluGradient);
+
+    cv::Mat XTranspose = X_train.t();
+    cv::Mat w1Gradient = utils.dot(XTranspose, z1Gradient) / m;
+
+    cv::Mat b1Gradient;
+    cv::reduce(z1Gradient, b1Gradient, 0, cv::REDUCE_AVG, CV_64FC1);
+
+    /*
+        Parameter update
+    */
+
+    w1 -= lr * w1Gradient;
+    b1 -= lr * b1Gradient;
+
+    w2 -= lr * w2Gradient;
+    b2 -= lr * b2Gradient;
 }
 
-void mazeNet :: printLayerSize () {
-    cout << "input size : " << input_size << endl;
-    cout << "hiden size : " << hidden_size << endl;
+void mazeNet::printLayerSize() {
+    cout << "input size  : " << input_size << endl;
+    cout << "hidden size : " << hidden_size << endl;
     cout << "output size : " << output_size << endl;
 }
